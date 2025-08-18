@@ -4,14 +4,13 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Basic route
+// Routes
 app.get("/", (req, res) => {
   res.json({
     message: "RAG API is running!",
@@ -19,7 +18,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// Placeholder routes (we'll build these next)
 app.post("/api/upload", (req, res) => {
   res.json({ message: "Upload endpoint - coming soon" });
 });
@@ -30,10 +28,6 @@ app.post("/api/query", (req, res) => {
     message: "Query endpoint - coming soon",
     question: question || "No question provided",
   });
-});
-
-app.listen(port, () => {
-  console.log(`RAG API running on port ${port}`);
 });
 
 // Export for Vercel
