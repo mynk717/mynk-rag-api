@@ -31,13 +31,29 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
     const { file } = req;
     if (!file) return res.status(400).json({ error: "No file uploaded" });
 
+    // ADD THIS LINE FOR DEBUGGING:
+    console.log("Uploaded file mimetype:", file.mimetype);
+    console.log("File details:", { name: file.originalname, size: file.size });
+
     let chunks;
+    // UPDATED FILE TYPE HANDLING:
     if (file.mimetype === "application/pdf") {
       chunks = await fileProcessor.processPDF(file.path);
-    } else if (file.mimetype === "text/csv") {
+    } else if (
+      file.mimetype === "text/csv" ||
+      file.mimetype === "application/vnd.ms-excel" ||
+      file.mimetype === "application/csv" ||
+      file.mimetype === "application/octet-stream"
+    ) {
       chunks = await fileProcessor.processCSV(file.path);
+    } else if (file.mimetype === "text/plain") {
+      const fs = require("fs");
+      const text = fs.readFileSync(file.path, "utf8");
+      chunks = fileProcessor.chunkText(text);
     } else {
-      return res.status(400).json({ error: "Unsupported file type" });
+      return res.status(400).json({
+        error: `Unsupported file type: ${file.mimetype}`,
+      });
     }
 
     const count = await vectorStore.storeDocuments(chunks, {
@@ -51,6 +67,7 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
       filename: file.originalname,
     });
   } catch (error) {
+    console.error("Upload error:", error);
     res.status(500).json({ error: error.message });
   }
 });
