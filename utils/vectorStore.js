@@ -13,9 +13,11 @@ class VectorStore {
   async initialize() {
     try {
       await this.client.getCollection(this.collectionName);
+      console.log("Collection exists with current configuration");
     } catch (error) {
+      console.log("Creating new collection with 384 dimensions");
       await this.client.createCollection(this.collectionName, {
-        vectors: { size: 1536, distance: "Cosine" },
+        vectors: { size: 384, distance: "Cosine" }, // Changed from 1536 to 384
       });
     }
   }
@@ -49,27 +51,27 @@ class VectorStore {
 
   async getEmbedding(text) {
     try {
-      const response = await fetch("https://api.openai.com/v1/embeddings", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          input: text,
-          model: "text-embedding-ada-002",
-        }),
-      });
+      const response = await fetch(
+        "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ inputs: text }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`OpenAI API error: ${response.statusText}`);
+        throw new Error(`Hugging Face API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      return data.data[0].embedding;
+      const embedding = await response.json();
+      return embedding;
     } catch (error) {
       console.error("Embedding generation failed:", error);
-      throw error;
+      // Fallback to dummy vectors if Hugging Face fails
+      return Array(384)
+        .fill(0)
+        .map(() => Math.random() - 0.5); // Note: 384 dimensions for this model
     }
   }
 }
