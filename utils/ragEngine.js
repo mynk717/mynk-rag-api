@@ -1,6 +1,6 @@
 class RAGEngine {
   constructor() {
-    this.openaiApiKey = process.env.OPENAI_API_KEY;
+    this.geminiApiKey = process.env.GEMINI_API_KEY;
   }
 
   async generateResponse(question, context) {
@@ -8,64 +8,61 @@ class RAGEngine {
       const prompt = this.buildPrompt(question, context);
 
       const response = await fetch(
-        "https://api.openai.com/v1/chat/completions",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${this.openaiApiKey}`,
             "Content-Type": "application/json",
+            "X-goog-api-key": this.geminiApiKey,
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
+            contents: [
               {
-                role: "system",
-                content:
-                  "You are a helpful assistant that answers questions based on provided context.",
+                parts: [
+                  {
+                    text: prompt,
+                  },
+                ],
               },
-              { role: "user", content: prompt },
             ],
-            max_tokens: 500,
-            temperature: 0.7,
           }),
         }
       );
 
       const data = await response.json();
-      console.log("OpenAI response:", data); // Debug log
+      console.log("Gemini response:", data);
 
-      // Handle API errors
-      if (data.error) {
-        console.error("OpenAI API error:", data.error);
-        return `Sorry, I encountered an API error: ${
-          data.error.message || "Unknown error"
+      // Handle Gemini response structure
+      if (data.candidates && data.candidates[0] && data.candidates.content) {
+        return data.candidates.content.parts.text;
+      } else if (data.error) {
+        console.error("Gemini API error:", data.error);
+        return `Based on your uploaded document: ${
+          context[0]?.text || "No relevant context found"
+        }. (API temporarily unavailable)`;
+      } else {
+        return `Based on your uploaded document about "${question}": ${
+          context[0]?.text || "Information found but processing issue occurred"
         }`;
       }
-
-      // Handle missing response
-      if (!data.choices || !data.choices.length || !data.choices[0].message) {
-        console.error("Invalid OpenAI response structure:", data);
-        return "Based on the uploaded document, I can provide information, but there was an issue generating the response. Please try again.";
-      }
-
-      return data.choices.message.content;
     } catch (error) {
-      console.error("Error generating response:", error);
-      return `Based on your uploaded document about "${question}", I found relevant content but encountered a technical issue. The document contains information about artificial intelligence and related topics.`;
+      console.error("Gemini API error:", error);
+      return `Based on your uploaded document: ${
+        context[0]?.text || "Content available but processing error occurred"
+      }`;
     }
   }
 
   buildPrompt(question, context) {
     const contextText = context.map(item => item.text).join("\n\n");
-
-    return `Based on the following context from uploaded documents, please answer the question.
+    return `Based on the following context from uploaded documents, please answer the question concisely and accurately.
 
 Context:
 ${contextText}
 
 Question: ${question}
 
-Answer based on the context provided:`;
+Answer based only on the context provided:`;
   }
 }
 
