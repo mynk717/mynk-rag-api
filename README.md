@@ -3,7 +3,7 @@
 A minimal, modern Retrieval-Augmented Generation (RAG) client inspired by NotebookLM, built with React, Vite, Tailwind CSS, and a custom backend API—optimized for knowledge integration from user-uploaded documents and website links.
 
 ---
-Vercel Site Link for demo: https://mynk-rag-api.vercel.app/
+Vercel Site Link for demo: https://mynk-ji756x2ic-mynk717s-projects.vercel.app/
 ---
 
 ## 🚀 Features
