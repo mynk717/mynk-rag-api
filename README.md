@@ -1,10 +1,9 @@
-
-***
-
-```markdown
 # RAG Notebook (NotebookLM-style UI)
+
 A minimal, modern Retrieval-Augmented Generation (RAG) client inspired by NotebookLM, built with React, Vite, Tailwind CSS, and a custom backend API—optimized for knowledge integration from user-uploaded documents and website links.
 
+---
+Vercel Site Link for demo: https://mynk-rag-api.vercel.app/
 ---
 
 ## 🚀 Features
@@ -32,27 +31,28 @@ A minimal, modern Retrieval-Augmented Generation (RAG) client inspired by Notebo
 
 ### 1. Clone the repo
 
-```
+```bash
 git clone https://github.com/yourusername/your-repo-name.git
 cd your-repo-name/rag-notebook
 ```
 
 ### 2. Install dependencies
 
-```
+```bash
 npm install
 ```
 
 ### 3. Development
 
-```
+```bash
 npm run dev
 ```
+
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### 4. Production build
 
-```
+```bash
 npm run build
 npm run preview
 ```
@@ -139,7 +139,7 @@ npm run preview
 
 - UI inspired by Google’s NotebookLM
 - RAG backend architecture reference: [OpenAI Cookbook](https://github.com/openai/openai-cookbook)
-- Built by [Your Name or Team], 2025
+- Built by Mayank, 2025
 
 ---
 
@@ -152,10 +152,6 @@ npm run preview
 
 ## 💬 Feedback & Support
 
-For issues and feedback, open an issue in this repo or contact 
+For issues and feedback, open an issue in this repo or contact shukla.mayank247@gmail.com.
 
 ---
-
-```
-
-***
